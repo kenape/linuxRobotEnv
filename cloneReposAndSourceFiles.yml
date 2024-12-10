@@ -1,0 +1,32 @@
+# Example usage: 
+# ansible-playbook cloneReposAndSourceFiles.yml -e repos=["https://github.com/some/repo.git", "https://github.com/another/repo.git"] -e source_files=["~/some/file1.sh", "~/some/file2.sh"]
+#
+# This playbook clones repositories into the home directory and adds dynamic sourcing of files in .bashrc.
+
+- name: Clone some repos and source files from them
+  hosts: all
+  become: yes
+
+  vars:
+    repos: "{{ repos | default([]) }}"
+    source_files: "{{ source_files | default([]) }}"
+
+  tasks:
+    - name: Clone repositories
+      git:
+        repo: "{{ item }}"
+        dest: "~/{{ item | basename }}"
+      loop: "{{ repos }}"
+      when: repos | length > 0
+
+    - name: Add dynamic sourcing to .bashrc
+      blockinfile:
+        path: ~/.bashrc
+        block: |
+          # Check if shell is interactive in order to source things that would otherwise break scp, etc...
+          if [[ $- == *i* ]]; then
+          {% for file in source_files %}
+            . {{ file }}
+          {% endfor %}
+          fi
+      when: source_files | length > 0
