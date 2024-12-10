@@ -1,7 +1,7 @@
 # Example usage: 
-# ansible-playbook cloneReposAndSourceFiles.yml -e repos=["https://github.com/some/repo.git", "https://github.com/another/repo.git"] -e source_files=["~/some/file1.sh", "~/some/file2.sh"]
+# ansible-playbook cloneReposAndSourceFiles.yml -e repos=["https://github.com/somerepo.git", "https://github.com/anotherrepo.git"] -e source_files=["~/somerepo/file1.sh", "~/anotherrepo/file2.sh"]
 #
-# This playbook clones repositories into the home directory and adds dynamic sourcing of files in .bashrc.
+# This playbook clones repositories into the home directory and adds dynamic sourcing of files from them in .bashrc.
 
 - name: Clone some repos and source files from them
   hosts: all
