@@ -1,5 +1,5 @@
 # Example usage: 
-# ansible-playbook linuxWorkEnvPlaybook.yml -e git_user_name="Your Name" -e git_user_email="your-email@example.com"
+# ansible-playbook -i "localhost," --connection=local linuxWorkEnv/linuxWorkEnvPlaybook.yml -e git_user_name="'Your Name'" -e git_user_email="your.email@example.com"    # trailing comma after localhost to pass it as inline inventory, connection local to not use ssh (which requires keys) and single and double quotes in user name to escape any contained spaces
 #
 # This playbook installs necessary packages (vim, tmux), configures Git, clones the robotframework-vim repository, 
 # and configures .vimrc and .tmux.conf.
@@ -22,10 +22,10 @@
 
     - name: Configure Git
       shell: |
-        if ! git config --global user.name; then
+        if [ "$(git config --global user.name)" != "{{ git_user_name }}" ]; then
           git config --global user.name "{{ git_user_name }}"
         fi
-        if ! git config --global user.email; then
+        if [ "$(git config --global user.email)" != "{{ git_user_email }}" ]; then
           git config --global user.email "{{ git_user_email }}"
         fi
         if ! git config --global color.ui; then
@@ -49,8 +49,6 @@
         src: "~/robotframework-vim/"
         dest: "~/.vim/"
         mode: '0755'
-        remote_src: yes
-        recurse: yes
         force: yes
 
     - name: Update .vimrc with custom configuration
