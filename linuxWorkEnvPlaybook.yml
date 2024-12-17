@@ -16,8 +16,9 @@
     - name: Install necessary packages
       yum:
         name: 
-          - vim
+          - git
           - tmux
+          - vim
         state: present
 
     - name: Configure Git
