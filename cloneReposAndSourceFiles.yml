@@ -18,8 +18,6 @@
         - name: Debug message when no input is provided
           debug:
             msg: "No repositories or source files specified. Skipping all tasks."
-          when: repos | length == 0 and source_files | length == 0
-
       when: repos | length == 0 and source_files | length == 0
       tags: skip
 
