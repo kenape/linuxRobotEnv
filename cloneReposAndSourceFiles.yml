@@ -1,5 +1,5 @@
 # Example usage (with some repos from here):
-# ansible-playbook cloneReposAndSourceFiles.yml -e 'repos=["https://github.com/kenape/kubehelpers.git", "https://github.com/kenape/thercs.git"]' -e 'source_files=["~/kubehelpers/helpers.sh", "~/thercs/bindings.sh"]'
+# ansible-playbook -i "localhost," --connection=local cloneReposAndSourceFiles.yml -e 'repos=["https://github.com/kenape/kubehelpers.git", "https://github.com/kenape/thercs.git"]' -e 'source_files=["~/kubehelpers/helpers.sh", "~/thercs/bindings.sh"]'
 #
 # This playbook clones repositories into the home directory and adds dynamic sourcing of files from them in .bashrc.
 # Although the playbook can handle being called without any values passed for its variables it doesn't make sense to call it like this because it will do nothing
