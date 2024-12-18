@@ -1,7 +1,8 @@
-# Example usage (with some repos from here): 
-# ansible-playbook cloneReposAndSourceFiles.yml -e repos=["https://github.com/kenape/kubehelpers.git", "https://github.com/kenape/thercs.git"] -e source_files=["~/kubehelpers/helpers.sh", "~/thercs/bindings.sh"]
+# Example usage (with some repos from here):
+# ansible-playbook cloneReposAndSourceFiles.yml -e 'repos=["https://github.com/kenape/kubehelpers.git", "https://github.com/kenape/thercs.git"]' -e 'source_files=["~/kubehelpers/helpers.sh", "~/thercs/bindings.sh"]'
 #
 # This playbook clones repositories into the home directory and adds dynamic sourcing of files from them in .bashrc.
+# Although the playbook can handle being called without any values passed for its variables it doesn't make sense to call it like this because it will do nothing
 
 - name: Clone some repos and source files from them
   hosts: all
@@ -11,11 +12,22 @@
     repos: "{{ repos | default([]) }}"
     source_files: "{{ source_files | default([]) }}"
 
+  pre_tasks:
+    - name: Check if input parameters are provided
+      block:
+        - name: Debug message when no input is provided
+          debug:
+            msg: "No repositories or source files specified. Skipping all tasks."
+          when: repos | length == 0 and source_files | length == 0
+
+      when: repos | length == 0 and source_files | length == 0
+      tags: skip
+
   tasks:
     - name: Clone repositories
       git:
         repo: "{{ item }}"
-        dest: "~/{{ item | basename }}"
+        dest: "~/{{ item | basename | regex_replace('\\.git$', '') }}"
       loop: "{{ repos }}"
       when: repos | length > 0
 
@@ -23,7 +35,7 @@
       blockinfile:
         path: ~/.bashrc
         block: |
-          
+
           # Check if shell is interactive in order to source things that would otherwise break scp, etc...
           if [[ $- == *i* ]]; then
           {% for file in source_files %}
