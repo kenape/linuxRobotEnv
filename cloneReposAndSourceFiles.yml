@@ -15,10 +15,10 @@
   pre_tasks:
     - name: Check if input parameters are provided
       block:
-        - name: Debug message when no input is provided
+        - name: Check if repos and source_files are empty
+          when: not repos and not source_files
           debug:
             msg: "No repositories or source files specified. Skipping all tasks."
-      when: (repos | default([])) | length == 0 and (source_files | default([])) | length == 0
       tags: skip
 
   tasks:
@@ -27,7 +27,7 @@
         repo: "{{ item }}"
         dest: "~/{{ item | basename | regex_replace('\\.git$', '') }}"
       loop: "{{ repos }}"
-      when: (repos | default([])) | length > 0
+      when: repos
 
     - name: Add dynamic sourcing to .bashrc
       blockinfile:
@@ -40,4 +40,4 @@
             . {{ file }}
           {% endfor %}
           fi
-      when: (source_files | default([])) | length > 0
+      when: source_files
