@@ -1,25 +1,16 @@
-# Example usage (with some repos from here):
-# ansible-playbook -i "localhost," --connection=local cloneReposAndSourceFiles.yml -e 'repos=["https://github.com/kenape/kubehelpers.git", "https://github.com/kenape/thercs.git"]' -e 'source_files=["~/kubehelpers/helpers.sh", "~/thercs/bindings.sh"]'
+# Example usage (with some repos from here): 
+# ansible-playbook -i "localhost," --connection=local cloneReposAndSourceFiles.yml -e '{"repos": ["https://github.com/kenape/kubehelpers.git", "https://github.com/kenape/thercs.git"], "source_files": ["~/kubehelpers/helpers.sh", "~/thercs/bindings.sh"]}'
 #
 # This playbook clones repositories into the home directory and adds dynamic sourcing of files from them in .bashrc.
 # Although the playbook can handle being called without any values passed for its variables it doesn't make sense to call it like this because it will do nothing
 
 - name: Clone some repos and source files from them
   hosts: all
-  become: yes
+  become: no
 
   vars:
     repos: "{{ repos | default([]) }}"
     source_files: "{{ source_files | default([]) }}"
-
-  pre_tasks:
-    - name: Check if input parameters are provided
-      block:
-        - name: Check if repos and source_files are empty
-          when: not repos and not source_files
-          debug:
-            msg: "No repositories or source files specified. Skipping all tasks."
-      tags: skip
 
   tasks:
     - name: Clone repositories
@@ -27,7 +18,7 @@
         repo: "{{ item }}"
         dest: "~/{{ item | basename | regex_replace('\\.git$', '') }}"
       loop: "{{ repos }}"
-      when: repos
+      when: repos | length > 0
 
     - name: Add dynamic sourcing to .bashrc
       blockinfile:
@@ -40,4 +31,4 @@
             . {{ file }}
           {% endfor %}
           fi
-      when: source_files
+      when: source_files | length > 0
