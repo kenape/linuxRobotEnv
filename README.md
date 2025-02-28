@@ -1,5 +1,4 @@
 # linuxWorkEnv
-Ansible playbooks to sets up a minimal linux Robot dev environment  
-Git, tmux, vim and the robot framework plugin for vim by mfukarak  
+Ansible playbooks to set up my minimal Linux Robot dev environment  
   
-Check the playbooks for examples on how to invoke
+After initial install of the Linux machine, install ansible (e.g. for CentOS, Rocky etc `yum install -y ansible`) and check each playbook for examples on how to invoke (they can be invoked in any order)
